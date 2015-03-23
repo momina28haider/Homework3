@@ -6,8 +6,8 @@ class MoviesController < ApplicationController
 	case sort
 	when "title" 
 		@movies = Movie.find(:all, :order=>sort)
-		return @movies
 		@cstag = 'application'
+		return @movies
 	when "release_date"
 		@movies = Movie.find(:all, :order=>sort)
 		@cstag = 'application'
