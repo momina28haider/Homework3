@@ -3,18 +3,33 @@ class MoviesController < ApplicationController
 
   def index
 	sort = params[:sort]
+	ratings = params[:ratings]
 	@all_ratings = Movie.all_ratings
+	@selected_ratings = params[:ratings] || {}
+	
 	case sort
-	when "title" 
+	when "title"
 		@movies = Movie.find(:all, :order=>sort)
+		ordering = {:order=>sort}
 		@cstag = 'application'
-		return @movies
+		if @selected_ratings = {}
+			return @movies
+		end
 	when "release_date"
 		@movies = Movie.find(:all, :order=>sort)
+		ordering = {:order=>sort}
+		@cstag = 'application'
+		if @selected_ratings = {}
+			return @movies
+		end
+	end
+	
+	if @selected_ratings != {}
+		@movies = Movie.find_all_by_rating(params[:ratings].keys, ordering)
 		@cstag = 'application'
 		return @movies
 	end
-	@movies = Movie.all
+		@movies = Movie.all
   end
 
   def show
