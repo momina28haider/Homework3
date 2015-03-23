@@ -2,7 +2,18 @@
 class MoviesController < ApplicationController
 
   def index
-	@movies = Movie.find(:all,:order => params[:sort]);
+	sort = params[:sort]
+	case sort
+	when "title" 
+		@movies = Movie.find(:all, :order=>sort)
+		@cstag = 'application'
+		return @movies
+	when "release_date"
+		@movies = Movie.find(:all, :order=>sort)
+		@cstag = 'application'
+		return @movies
+	end
+	@movies = Movie.all
   end
 
   def show
