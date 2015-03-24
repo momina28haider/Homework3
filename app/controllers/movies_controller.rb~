@@ -2,34 +2,44 @@
 class MoviesController < ApplicationController
 	@sheettype = 'application'
   def index
-	sort = params[:sort]
+	sort = params[:sort]||session[:sort]
 	ratings = params[:ratings]
 	@all_ratings = Movie.all_ratings
-	@selected_ratings = params[:ratings] || {}
+	@selected_ratings = params[:ratings] || session[:ratings]||{}
 	
 	case sort
 	when "title"
 		@movies = Movie.find(:all, :order=>sort)
 		ordering = {:order=>sort}
 		@cstag = 'application'
-		if @selected_ratings = {}
-			return @movies
+		if @selected_ratings == {} and params[:sort] != session[:sort] 
+			session[:sort] = sort
+			flash.keep
+			redirect_to :sort=>sort, :ratings =>@selected_ratings and return
+			
+			
 		end
 	when "release_date"
 		@movies = Movie.find(:all, :order=>sort)
 		ordering = {:order=>sort}
 		@cstag = 'application'
-		if @selected_ratings = {}
-			return @movies
+		if @selected_ratings == {} and params[:sort] != session[:sort] 
+			session[:sort] = sort
+			flash.keep
+			redirect_to :sort=>sort, :ratings =>@selected_ratings and return
+			
+			
 		end
 	end
-	
-	if @selected_ratings != {}
-		@movies = Movie.find_all_by_rating(params[:ratings].keys, ordering)
+	if params[:ratings] != session[:ratings] and @selected_ratings != {}
+		@movies = Movie.find_all_by_rating(@selected_ratings.keys, ordering)
 		@cstag = 'application'
-		return @movies
+		session[:sort] = sort
+		session[:ratings] = @selected_ratings
+		flash.keep
+		redirect_to :sort => sort, :ratings => @selected_ratings and return 
 	end
-		@movies = Movie.all
+		@movies = Movie.find_all_by_rating(@selected_ratings.keys, ordering)
   end
 
   def show
@@ -65,5 +75,4 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
 end
