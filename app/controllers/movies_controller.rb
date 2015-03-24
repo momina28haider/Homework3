@@ -1,6 +1,6 @@
 # This file is app/controllers/movies_controller.rb
 class MoviesController < ApplicationController
-
+	@sheettype = 'application'
   def index
 	sort = params[:sort]
 	ratings = params[:ratings]
