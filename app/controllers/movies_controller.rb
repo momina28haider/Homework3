@@ -1,6 +1,7 @@
 # This file is app/controllers/movies_controller.rb
 class MoviesController < ApplicationController
 	@sheettype = 'application'
+	@flag = 0;
   def index
 	sort = params[:sort]||session[:sort]
 	ratings = params[:ratings]
@@ -13,33 +14,39 @@ class MoviesController < ApplicationController
 		ordering = {:order=>sort}
 		@cstag = 'application'
 		if @selected_ratings == {} and params[:sort] != session[:sort] 
+			@flag = 1;
 			session[:sort] = sort
 			flash.keep
 			redirect_to :sort=>sort, :ratings =>@selected_ratings and return
-			
-			
+				
 		end
 	when "release_date"
 		@movies = Movie.find(:all, :order=>sort)
 		ordering = {:order=>sort}
 		@cstag = 'application'
-		if @selected_ratings == {} and params[:sort] != session[:sort] 
+		if @selected_ratings == {} and params[:sort] != session[:sort] 		
+			@flag = 2;
 			session[:sort] = sort
 			flash.keep
 			redirect_to :sort=>sort, :ratings =>@selected_ratings and return
 			
-			
 		end
 	end
 	if params[:ratings] != session[:ratings] and @selected_ratings != {}
+		@flag  = 3;
 		@movies = Movie.find_all_by_rating(@selected_ratings.keys, ordering)
 		@cstag = 'application'
 		session[:sort] = sort
 		session[:ratings] = @selected_ratings
 		flash.keep
 		redirect_to :sort => sort, :ratings => @selected_ratings and return 
+		return @movies
 	end
+	if @flag != 0
 		@movies = Movie.find_all_by_rating(@selected_ratings.keys, ordering)
+	else 
+		@movies = Movie.all
+	end
   end
 
   def show
